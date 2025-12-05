@@ -1,23 +1,23 @@
-import express from "express";
-import {
-  fetchProducts,
-  fetchProduct,
-  createNewProduct,
-  updateProductData,
-  deleteProductData,
-} from "../controllers/products.controller.js";
-
-import { authBearer } from "../middlewares/auth.middleware.js";
-
+const express = require('express');
 const router = express.Router();
 
-// Public route
-router.get("/", fetchProducts);
-router.get("/:id", fetchProduct);
+const {
+    getAllProducts,
+    getProductById,
+    createProduct,
+    updateProduct,
+    deleteProduct
+} = require('../controllers/products.controller');
 
-// Protected Route
-router.post("/", authBearer, createNewProduct);
-router.put("/:id", authBearer, updateProductData);
-router.delete("/:id", authBearer, deleteProductData);
+const { authBearer } = require('../middlewares/auth.middleware');
 
-export default router;
+// Public
+router.get('/', getAllProducts);
+router.get('/:id', getProductById);
+
+// Protected (harus pakai Bearer Token)
+router.post('/', authBearer, createProduct);
+router.put('/:id', authBearer, updateProduct);
+router.delete('/:id', authBearer, deleteProduct);
+
+module.exports = router;

@@ -1,52 +1,47 @@
-import {
-  getProducts,
-  getProductById,
-  createProduct,
-  updateProduct,
-  deleteProduct,
-} from "../models/products.model.js";
+const Product = require('../models/products.model');
 
-export const fetchProducts = async (req, res) => {
-  try {
-    const products = await getProducts();
-    res.json(products);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
+// GET ALL
+exports.getAllProducts = (req, res) => {
+    Product.getAll((err, results) => {
+        if (err) return res.status(500).json(err);
+        res.json(results);
+    });
 };
 
-export const fetchProduct = async (req, res) => {
-  try {
-    const product = await getProductById(req.params.id);
-    res.json(product);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
+// GET BY ID
+exports.getProductById = (req, res) => {
+    const id = req.params.id;
+    Product.getById(id, (err, results) => {
+        if (err) return res.status(500).json(err);
+        if (results.length === 0) return res.status(404).json({ message: "Product not found" });
+        res.json(results[0]);
+    });
 };
 
-export const createNewProduct = async (req, res) => {
-  try {
-    const product = await createProduct(req.body);
-    res.status(201).json(product);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
+// CREATE
+exports.createProduct = (req, res) => {
+    const data = req.body;
+    Product.create(data, (err, result) => {
+        if (err) return res.status(500).json(err);
+        res.status(201).json({ message: "Product created", id: result.insertId, data });
+    });
 };
 
-export const updateProductData = async (req, res) => {
-  try {
-    const result = await updateProduct(req.params.id, req.body);
-    res.json({ message: "Product updated", result });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
+// UPDATE
+exports.updateProduct = (req, res) => {
+    const id = req.params.id;
+    const data = req.body;
+    Product.update(id, data, (err, result) => {
+        if (err) return res.status(500).json(err);
+        res.json({ message: "Product updated" });
+    });
 };
 
-export const deleteProductData = async (req, res) => {
-  try {
-    const result = await deleteProduct(req.params.id);
-    res.json({ message: "Product deleted", result });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
+// DELETE
+exports.deleteProduct = (req, res) => {
+    const id = req.params.id;
+    Product.delete(id, (err) => {
+        if (err) return res.status(500).json(err);
+        res.json({ message: "Product deleted" });
+    });
 };

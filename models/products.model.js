@@ -1,50 +1,25 @@
-import db from "../config/db.js";
+const db = require('./db.config');
 
-export const getProducts = () => {
-  return new Promise((resolve, reject) => {
-    db.query("SELECT * FROM products", (err, results) => {
-      if (err) reject(err);
-      resolve(results);
-    });
-  });
+const Product = {
+    getAll: (callback) => {
+        db.query('SELECT * FROM products', callback);
+    },
+
+    getById: (id, callback) => {
+        db.query('SELECT * FROM products WHERE id = ?', [id], callback);
+    },
+
+    create: (data, callback) => {
+        db.query('INSERT INTO products SET ?', data, callback);
+    },
+
+    update: (id, data, callback) => {
+        db.query('UPDATE products SET ? WHERE id = ?', [data, id], callback);
+    },
+
+    delete: (id, callback) => {
+        db.query('DELETE FROM products WHERE id = ?', [id], callback);
+    }
 };
 
-export const getProductById = (id) => {
-  return new Promise((resolve, reject) => {
-    db.query("SELECT * FROM products WHERE id = ?", [id], (err, results) => {
-      if (err) reject(err);
-      resolve(results[0]);
-    });
-  });
-};
-
-export const createProduct = (product) => {
-  return new Promise((resolve, reject) => {
-    db.query("INSERT INTO products SET ?", product, (err, results) => {
-      if (err) reject(err);
-      resolve({ id: results.insertId, ...product });
-    });
-  });
-};
-
-export const updateProduct = (id, product) => {
-  return new Promise((resolve, reject) => {
-    db.query(
-      "UPDATE products SET ? WHERE id = ?",
-      [product, id],
-      (err, results) => {
-        if (err) reject(err);
-        resolve(results);
-      }
-    );
-  });
-};
-
-export const deleteProduct = (id) => {
-  return new Promise((resolve, reject) => {
-    db.query("DELETE FROM products WHERE id = ?", [id], (err, results) => {
-      if (err) reject(err);
-      resolve(results);
-    });
-  });
-};
+module.exports = Product;
